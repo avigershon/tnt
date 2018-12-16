@@ -8,7 +8,10 @@
         "node-red-contrib-config": "1.1.2",
         "node-red-contrib-google": "0.2.0",
         "node-red-contrib-elasticsearch3": "*",
-        "node-red-contrib-rdkafka": "*"
+        "node-red-contrib-rdkafka": "*",
+        "node-red-contrib-redis": "*",
+        "node-red-contrib-postgres": "*",
+        "node-red-contrib-aws-dynamodb": "*"
     },
     "node-red": {
         "settings": {
