@@ -1,0 +1,29 @@
+{{- if .Values.persistence.enabled }}
+{{- if eq .Values.persistence.cloud "aws"}}
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: aws-fast
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "false"
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: io1
+  zones: us-east-1a
+  fsType: ext4
+allowVolumeExpansion: true
+{{- end }}
+
+{{- if eq .Values.persistence.cloud "gcp"}}
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: fast
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "false"
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+allowVolumeExpansion: true
+{{- end }}
+{{- end }}
