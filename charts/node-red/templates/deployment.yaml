@@ -1,0 +1,133 @@
+{{- if .Values.statefull.enabled }}
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ template "name" . }}
+spec:
+  serviceName: "{{ .Chart.Name }}"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+      chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: ["npm", "start", "--", "--userDir", "/data", "--settings", "/usr/src/node-red/node_modules/node-red/settings/settings.js"]
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.service.internalPort }}
+            name: {{ template "name" . }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        volumeMounts:
+        - mountPath: /data
+          name: datadir
+        - mountPath: /usr/src/node-red/node_modules/node-red/settings
+          name: {{ template "name" . }}-settings
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      restartPolicy: Always
+      volumes:
+      - name: {{ template "name" . }}-settings
+        configMap:
+          name: {{ template "name" . }}-configmap
+          items:
+          - key: settings.js
+            path: settings.js 
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+  {{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes:
+{{ toYaml .Values.persistence.accessModes | indent 8 }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+{{- if .Values.persistence.storageClass }}
+{{- if (eq "-" .Values.persistence.storageClass) }}
+      storageClassName: ""
+{{- else }}
+      storageClassName: "{{ .Values.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{- else }}      
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: ["npm", "start", "--", "--userDir", "/data", "--settings", "/usr/src/node-red/node_modules/node-red/settings/settings.js"]
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.service.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        volumeMounts:
+        - mountPath: /data
+          name: {{ .Release.Name }}-data
+        - mountPath: /usr/src/node-red/node_modules/node-red/settings
+          name: {{ .Release.Name }}-settings
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      restartPolicy: Always
+      volumes:
+      - name: {{ .Release.Name }}-settings
+        configMap:
+          name: {{ .Release.Name }}-configmap
+          items:
+          - key: settings.js
+            path: settings.js
+      - name: {{ .Release.Name }}-data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-data
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+{{- end }}
