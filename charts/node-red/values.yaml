@@ -5,7 +5,7 @@ replicaCount: 1
 image:
   repository: datagram/tnt-node-red
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 service:
   name: node-red
   type: LoadBalancer
