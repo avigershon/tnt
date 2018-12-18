@@ -57,5 +57,5 @@ Create a default fully qualified postgresql name.
 Create a default fully qualified redis name.
 */}}
 {{- define "redash.redis.fullname" -}}
-{{- template "redash.fullname" . -}}-redis
+{{- template "redash.fullname" . -}}-redis-master
 {{- end -}}
