@@ -1,6 +1,6 @@
 db:
-  name: "postgres"
-  user: "postgres"
+  name: "redash"
+  user: "redash"
   pass: "C1jx5g5Of3Lx70l3"
   host: "postgres-postgresql"
 
