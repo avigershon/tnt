@@ -170,4 +170,4 @@ postgresql:
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md
 ##
 redis:
-  redisPassword: redash
+  password: redash
