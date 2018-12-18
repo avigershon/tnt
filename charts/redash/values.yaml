@@ -5,7 +5,7 @@
 ##
 image:
   repository: redash/redash
-  tag: 6.0.0.b8537
+  tag: 5.0.2.b5486
   pullPolicy: IfNotPresent
 
 ## Override the name of the chart
