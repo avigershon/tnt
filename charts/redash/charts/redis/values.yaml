@@ -98,7 +98,7 @@ rbac:
 ## ref: https://github.com/bitnami/bitnami-docker-redis#setting-the-server-password-on-first-run
 ##
 usePassword: true
-password:
+password: redash
 ## Use existing secret (ignores previous password)
 # existingSecret:
 
