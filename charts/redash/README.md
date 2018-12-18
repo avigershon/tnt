@@ -1,153 +1,113 @@
-# re:dash helm
+# Redash
 
-## Usage
+[Redash](http://redash.io/) is an open source tool built for teams to query, visualize and collaborate. Redash is quick to setup and works with any data source you might need so you can query from anywhere in no time.
 
-The following two items are explained.
-
-- GKE + Google Cloud SQL
-- GKE + Persistent Volume
-
-These two differences is db of redash (postgres) which host on GC SQL or PV.
-
-### 1. GKE + Google Cloud SQL (postgres)
-
-- Google Cloud SQL: re:dash Database
-
-#### 1-1. Setup Cloud SQL and Service Account
-
-- https://cloud.google.com/sql/docs/
-
-#### 1-2. helm install gcloud-cloudsql
-
-```yaml
-# cloudsql-values
-image: "gcr.io/cloudsql-docker/gce-proxy"
-imageTag: "1.11"
-serviceAccountKey: [SA_KEY]
-cloudsql:
-  instance: [INSTANCE_CONNECTION_NAME]
-  port: [DB_PORT]
-```
+## TL;DR
 
 ```bash
-$ helm install -f cloudsql-values.yaml --name=cloudproxy stable/gcloud-sqlproxy
+$ helm install incubator/redash
 ```
 
-Links
+## Introduction
 
-- https://github.com/kubernetes/charts/tree/master/stable/gcloud-sqlproxy
+This chart bootstraps a [Redash](https://github.com/getredash/redash) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-#### 1-3. helm install redash (this repository)
+## Prerequisites
+
+- At least 3 GB of RAM available on your cluster
+- Kubernetes 1.4+ with Beta APIs enabled
+- PV provisioner support in the underlying infrastructure
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
 
 ```bash
-$ git clone https://github.com/Himenon/redash-helm.git && cd ./redash-helm
+$ helm install --name my-release incubator/redash
 ```
 
-```yaml
-# redash-values.yaml
-db:
-  name: [DB_NAME]
-  user: [DB_USER]
-  pass: [DB_PASS]
-  host: [DB_HOST]
-service:
-  type: [SERVICE_TYPE]
-```
+The command deploys Redash on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
-```
-$ helm install -f redash-values.yaml redash-server .
-```
+> **Tip**: List all releases using `helm list`
 
-**Parameter**
+## Uninstalling the Chart
 
-- `[DB_NAME]`: redash using database name
-- `[DB_USER]`: redash using database user name
-- `[DB_PASS]`: Plain Text
-    - However, [template/\_helpers.tpl](/Himenon/redash-helm/blob/master/templates/_helpers.tpl) change base64 text.
-    - And use only above value in [template/secret.yaml](/Himenon/redash-helm/blob/master/templates/secret.yaml)
-- `[DB_HOST]`: Kubernetes Service Name
-    - **Cloud SQL**: Cloud SQL Service Name (Look 1-2).
-    - **Persistent Volume**: Postgres Service Name (Look 2-3).
-- `[SERVICE_TYPE]`: Kubernetes Service Type
-    - https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services---service-types
-
-
-### 2. GKE + Persistent Volume (postgres)
-
-- `[pv name]`: Persistent Volume name
-- `[pv size]`: Persitent Volume size
-- `[storage class]`: Storage Class Name 
-
-#### 2-1. Make Persistent Volum on GCE
+To uninstall/delete the `my-release` deployment:
 
 ```bash
-$ gcloud compute disks create [pv name] --size=[pv size] --type pd-standard
+$ helm delete my-release
 ```
 
-#### 2-2. Manage PV with kubernetes
+The command removes all the Kubernetes components associated with the chart and deletes the release.
 
-```yaml
-# pv.yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: psql-pv
-  annotations:
-    pv.beta.kubernetes.io/gid: "0"
-spec:
-  capacity:
-    storage: [pv size]Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Recycle
-  storageClassName: [storage class]
-  gcePersistentDisk:
-    pdName: [pv name]
-    fsType: ext4
-```
+## Configuration
+
+The following table lists the configurable parameters of the Redash chart and their default values.
+
+| Parameter                              | Description                                           | Default            |
+|----------------------------------------|-------------------------------------------------------|--------------------|
+| `image.registry`                       | Redash Image registry                                 | `docker.io`        |
+| `image.repository`                     | Redash Image name                                     | `redash/redash`    |
+| `image.tag`                            | Redash Image tag                                      | `{VERSION}`        |
+| `image.pullPolicy`                     | Image pull policy                                     | `IfNotPresent`     |
+| `image.pullSecrets`                    | Specify docker-ragistry secret names as an array      | `nil`              |
+| `cookieSecret`                         | Secret used for cookie session management             | Randomly generated |
+| `env`                                  | Environment variables from [Redash settings](https://redash.io/help-onpremise/setup/settings-environment-variables.html) and [example Docker Compose](https://github.com/getredash/redash/blob/master/docker-compose.production.yml). Variables applied to both server and worker containers. | `PYTHONUNBUFFERED: 0`<br>`REDASH_LOG_LEVEL: "INFO"` |
+| `server.name`                          | Name used for Redash server deployment                | `redash`           |
+| `server.httpPort`                      | Redash server container http port                     | `5000`             |
+| `server.env`                           | Environment variables from [Redash settings](https://redash.io/help-onpremise/setup/settings-environment-variables.html) and [example Docker Compose](https://github.com/getredash/redash/blob/master/docker-compose.production.yml). Variables applied to only server containers. | `REDASH_WEB_WORKERS: 4` |
+| `server.replicaCount`                  | Number of Redash server replicas to start             | `1`                |
+| `server.resources`                     | Server CPU/Memory resource requests/limits            | Memory `2GB`       |
+| `server.nodeSelector`                  | Node labels for server pod assignment                 | `{}`               |
+| `server.tolerations`                   | List of node taints to tolerate for server pod        | `[]`               |
+| `server.affinity`                      | Affinity settings for server pod assignment           | `{}`               |
+| `service.type`                         | Kubernetes Service type                               | `ClusterIP`        |
+| `service.port`                         | Service external port                                 | `80`               |
+| `ingress.enabled`                      | Enable ingress controller resource                    | `false`            |
+| `ingress.annotations`                  | Ingress annotations configuration                     | `nil`              |
+| `ingress.path`                         | Ingress resource path                                 | `nil`              |
+| `ingress.hosts`                        | Ingress resource hostnames                            | `nil`              |
+| `ingress.tls`                          | Ingress TLS configuration                             | `nil`              |
+| `adhocWorker.name`                     | Name used for Redash ad-hoc worker deployment         | `worker-adhoc` |
+| `adhocWorker.env`                      | Environment variables from [Redash settings](https://redash.io/help-onpremise/setup/settings-environment-variables.html) and [example Docker Compose](https://github.com/getredash/redash/blob/master/docker-compose.production.yml). Variables applied to only ad-hoc worker containers. Default worker count will run 2 worker threads per-replica. | `QUEUES: "queries,celery"`<br>`WORKERS_COUNT: 2` |
+| `adhocWorker.replicaCount`             | Number of Redash adhoc worker replicas to start       | `1`                |
+| `adhocWorker.resources`                | Ad-hoc worker CPU/Memory resource requests/limits     | `nil`              |
+| `adhocWorker.nodeSelector`             | Node labels for adhocWorker pod assignment            | `{}`               |
+| `adhocWorker.tolerations`              | List of node taints to tolerate for adhocWorker pod   | `[]`               |
+| `adhocWorker.affinity`                 | Affinity settings for adhocWorker pod assignment      | `{}`               |
+| `scheduledWorker.name`                 | Name used for Redash scheduled worker deployment      | `worker-scheduled` |
+| `scheduledWorker.env`                  | Environment variables from [Redash settings](https://redash.io/help-onpremise/setup/settings-environment-variables.html) and [example Docker Compose](https://github.com/getredash/redash/blob/master/docker-compose.production.yml). Variables applied to only scheduled worker containers. Default worker count will run 2 worker threads per-replica. | `QUEUES: "scheduled_queries"`<br>`WORKERS_COUNT: 2` |
+| `scheduledWorker.replicaCount`         | Number of Redash scheduled worker replicas to start   | `1`                |
+| `scheduledWorker.resources`            | Scheduled worker CPU/Memory resource requests/limits  | `nil`              |
+| `scheduledWorker.nodeSelector`         | Node labels for scheduledWorker pod assignment        | `{}`               |
+| `scheduledWorker.tolerations`          | List of node taints to tolerate for scheduledWorker pod | `[]`             |
+| `scheduledWorker.affinity`             | Affinity settings for scheduledWorker pod assignment  | `{}`               |
+| `postgresql.name`                      | Name used for PostgreSQL deployment                   | `postgresql`       |
+| `postgresql.imageTag`                  | PostgreSQL image version                              | `9.5.6-alpine`     |
+| `postgresql.postgresUser`              | PostgreSQL User to create                             | `redash`           |
+| `postgresql.postgresPassword`          | PostgreSQL Password for the new user                  | `redash`           |
+| `postgresql.postgresDatabase`          | PostgreSQL Database to create                         | `redash`           |
+| `postgresql.persistence.enabled`       | Use a PVC to persist PostgreSQL data                  | `true`             |
+| `postgresql.persistence.size`          | PVC Storage Request size for PostgreSQL volume        | `10Gi`             |
+| `postgresql.persistence.accessMode`    | Use PostgreSQL volume as ReadOnly or ReadWrite        | `ReadWriteOnce`    |
+| `postgresql.persistence.storageClass`  | Storage Class for PostgreSQL backing PVC              | `nil`<br>(uses alpha storage class annotation) |
+| `postgresql.persistence.existingClaim` | Provide an existing PostgreSQL PersistentVolumeClaim  | `nil`              |
+| `redis.name`                           | Name used for Redis deployment                        | `redis`            |
+| `redis.redisPassword`                  | Redis Password to use                                 | `redash`           |
+
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```bash
-$ kubectl apply -f pv.yaml
+$ helm install --name my-release \
+  --set cookieSecret=verysecret \
+    incubator/redash
 ```
 
-Links
+The above command sets the Redash cookie secret to `verysecret`.
 
-- https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistent-volumes
-
-#### 2-3. helm install postgres
-
-```yaml
-# psql-values.yaml
-imageTag: "9.5.6-alpine"
-persistence:
-  enabled: true
-  storageClass: [storage class]
-service:
-  type: ClusterIP
-  port: 5432
-```
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```bash
-$ helm install -f psql-values.yaml --name redash-db stable/postgresql
+$ helm install --name my-release -f values.yaml incubator/redash
 ```
-
-Links
-
-- https://github.com/kubernetes/charts/tree/master/stable/postgresql
-
-#### 2-4. helm install redash (this repository)
-
-Same: 1-3
-
-# Author
-
-- [Himenon](https://github.com/Himenon)
-
-
-# TODO
-
-- networkpolicy
-- NOTES
-
-
-
+> **Tip**: You can use the default [values.yaml](values.yaml)
