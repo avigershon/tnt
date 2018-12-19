@@ -25,7 +25,7 @@ env:
   REDASH_MAIL_USE_SSL: "false" # default: False
   REDASH_MAIL_USERNAME: "mikelevitona@gmail.com" # default: None
   REDASH_MAIL_PASSWORD: "Lior@n020" # default: None
-  REDASH_MAIL_DEFAULT_SENDER: "mikelevitona@gmail.com" # Email address to send from
+  REDASH_MAIL_DEFAULT_SENDER: "no-reply@triedandtruemedia.com " # Email address to send from
 
 ## Configuration for Redash web server
 ##
