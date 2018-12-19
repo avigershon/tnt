@@ -12,7 +12,8 @@ helm install --name nginx-ingress stable/nginx-ingress --namespace kube-system -
 
 helm install --name cert-manager stable/cert-manager --set createCustomResource=false
 
-helm upgrade --install cert-manager stable/cert-manager --set createCustomResource=true
+helm upgrade --install cert-manager stable/cert-manager --set createCustomResource=true --set ingressShim.extraArgs='{--default-issuer-name=letsencrypt-prod,--default-issuer-kind=ClusterIssuer}'
+
 #
 # echo "installing nginx-ingress"
 # bash ./setup-gcp.sh --chart charts/nginx-ingress
