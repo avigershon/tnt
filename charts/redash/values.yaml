@@ -18,6 +18,13 @@ nameOverride: ""
 env:
   PYTHONUNBUFFERED: 0
   REDASH_LOG_LEVEL: "DEBUG"
+  REDASH_MAIL_SERVER: "smtp.gmail.com" # default: localhost
+  REDASH_MAIL_PORT: "587" # default: 25
+  REDASH_MAIL_USE_TLS: "true" # default: False
+  REDASH_MAIL_USE_SSL: "465" # default: False
+  REDASH_MAIL_USERNAME: "mikelevitona@gmail.com" # default: None
+  REDASH_MAIL_PASSWORD: "Lior@n020" # default: None
+  REDASH_MAIL_DEFAULT_SENDER: "mikelevitona@gmail.com" # Email address to send from
 
 ## Configuration for Redash web server
 ##
