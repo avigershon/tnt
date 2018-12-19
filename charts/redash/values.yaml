@@ -18,7 +18,8 @@ nameOverride: ""
 env:
   PYTHONUNBUFFERED: 0
   REDASH_LOG_LEVEL: "DEBUG"
-
+  REDASH_HOST: "35.238.49.184"
+  
 ## Configuration for Redash web server
 ##
 server:
@@ -67,9 +68,9 @@ service:
   port: 80
 
 ingress:
-  enabled: true
-  annotations: 
-    kubernetes.io/ingress.class: nginx
+  enabled: false
+  annotations:
+    # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
