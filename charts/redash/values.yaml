@@ -32,7 +32,7 @@ server:
   ## Add any environment variables from https://redash.io/help-onpremise/setup/settings-environment-variables.html
   ##
   env:
-    REDASH_WEB_WORKERS: 1
+    REDASH_WEB_WORKERS: 4
 
   replicaCount: 1
 
@@ -67,9 +67,9 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
@@ -87,7 +87,7 @@ adhocWorker:
   ##
   env:
     QUEUES: "queries,celery"
-    WORKERS_COUNT: 1
+    WORKERS_COUNT: 2
 
   replicaCount: 1
 
@@ -119,7 +119,7 @@ scheduledWorker:
   ##
   env:
     QUEUES: "scheduled_queries"
-    WORKERS_COUNT: 1
+    WORKERS_COUNT: 2
 
   replicaCount: 1
 
