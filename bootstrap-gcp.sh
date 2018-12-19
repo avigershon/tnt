@@ -8,8 +8,11 @@ bash ./setup-gcp.sh --chart charts/default
 
 helm install --name nginx-ingress stable/nginx-ingress --namespace kube-system --set controller.hostNetwork=true,controller.kind=DaemonSet
 
-helm install --name kube-lego stable/kube-lego --namespace kube-system --set config.LEGO_EMAIL=avigershon@gmail.com,config.LEGO_URL=https://acme-v01.api.letsencrypt.org/directory
+#helm install --name kube-lego stable/kube-lego --namespace kube-system --set config.LEGO_EMAIL=avigershon@gmail.com,config.LEGO_URL=https://acme-v01.api.letsencrypt.org/directory
 
+helm install --name cert-manager stable/cert-manager --set createCustomResource=false
+
+helm upgrade --install cert-manager stable/cert-manager --set createCustomResource=true
 #
 # echo "installing nginx-ingress"
 # bash ./setup-gcp.sh --chart charts/nginx-ingress
