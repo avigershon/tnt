@@ -18,8 +18,7 @@ nameOverride: ""
 env:
   PYTHONUNBUFFERED: 0
   REDASH_LOG_LEVEL: "DEBUG"
-  REDASH_HOST: "35.238.49.184"
-  
+
 ## Configuration for Redash web server
 ##
 server:
@@ -64,7 +63,7 @@ server:
   affinity: {}
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
 
 ingress:
