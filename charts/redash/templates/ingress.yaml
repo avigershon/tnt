@@ -5,10 +5,10 @@ name: redash-ingress
 annotations:
     kubernetes.io/ingress.class: nginx
 spec:
-rules:
-- http:
-    paths:
-    - path: /
-        backend:
-        serviceName: redash
-        servicePort: 80
+  rules:
+  - http:
+      paths:
+      - path: /
+          backend:
+          serviceName: redash
+          servicePort: 80
