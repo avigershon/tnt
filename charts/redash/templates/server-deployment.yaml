@@ -23,6 +23,17 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
+      {{- if .Values.ssl.enabled }}
+        ## ref: https://github.com/Yolean/kubernetes-kafka/blob/master/kafka/50kafka.yml
+        - name: init-ssl
+          image: "{{ .Values.ssl.init.image }}:{{ .Values.ssl.init.imageTag }}"
+          imagePullPolicy: "{{ .Values.ssl.init.imagePullPolicy }}"
+          command:
+            - sh
+            - -exc
+            - |
+              while [[ $( kubectl get secret | grep kafka- | wc -l) != "3" ]]; do echo kafka secrets are not ready yet; sleep 3;done
+      {{- end }}
         - name: {{ template "redash.name" . }}-server-createdb
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}

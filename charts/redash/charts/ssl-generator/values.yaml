@@ -1,0 +1,41 @@
+# Default values for cp-kafka-rest.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+## Image Info
+## ref: https://hub.docker.com/r/confluentinc/cp-kafka/
+image: dbar1/ssl_gen_kubernetes
+imageTag: latest
+
+## Specify a imagePullPolicy
+## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+imagePullPolicy: Always
+
+imageCredentials:
+  name: dbar1
+  registry: docker.io
+  username: dbar1
+  password: Dedi123$%
+
+env:
+  COUNTRY: "US"
+  STATE: "NY"
+  ORGANIZATION: "ashford"
+  ORGANIZATION_UNIT: "bigdata"
+  COMMON_NAME: "ashford-kafka"
+  CITY: "NYC"
+  PASSWORD: "PY9Emm7j"
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi

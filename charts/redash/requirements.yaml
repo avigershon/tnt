@@ -5,3 +5,7 @@ dependencies:
 - name: postgresql
   version: "^0.9.5"
   repository: "http://storage.googleapis.com/kubernetes-charts/"
+- name: ssl-generator
+  version: 0.1.0
+  repository: file://../ssl-generator
+  condition: ssl-generator.enabled

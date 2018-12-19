@@ -78,7 +78,12 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
+ssl:
+  enabled: true
+  init:
+    image: "lwolf/kubectl_deployer"
+    imageTag: "0.4"
+    imagePullPolicy: "IfNotPresent"
 ## Configuration for Redash ad-hoc workers
 ##
 adhocWorker:
@@ -172,3 +177,15 @@ postgresql:
 redis:
   # usePassword: false
   redisPassword: redash
+
+ssl-generator:
+  enabled: true
+
+  env:
+    COUNTRY: "US"
+    STATE: "NY"
+    ORGANIZATION: "ashford"
+    ORGANIZATION_UNIT: "bigdata"
+    COMMON_NAME: "ashford-kafka"
+    CITY: "NYC"
+    PASSWORD: "PY9Emm7j"
