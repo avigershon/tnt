@@ -76,7 +76,7 @@ ingress:
   hosts:
     - tnt.avigershon.com
   tls:
-    - secretName: redash-tls
+    - secretName: tnt-redash-tls
       hosts:
         - tnt.avigershon.com
 ## Configuration for Redash ad-hoc workers

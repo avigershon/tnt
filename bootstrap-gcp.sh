@@ -5,6 +5,11 @@ bash ./setup-gcp.sh
 
 echo "default installation storageClass and role binding for dashboard admin"
 bash ./setup-gcp.sh --chart charts/default
+
+helm install --name nginx-ingress stable/nginx-ingress --namespace kube-system --set controller.hostNetwork=true,controller.kind=DaemonSet
+
+helm install --name kube-lego stable/kube-lego --namespace kube-system --set config.LEGO_EMAIL=avigershon@gmail.com,config.LEGO_URL=https://acme-v01.api.letsencrypt.org/directory
+
 #
 # echo "installing nginx-ingress"
 # bash ./setup-gcp.sh --chart charts/nginx-ingress
