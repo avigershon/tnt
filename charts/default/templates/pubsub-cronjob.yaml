@@ -8,6 +8,10 @@ spec:
     spec:
       template:
         spec:
+          volumes:
+          - name: google-cloud-key
+            secret:
+              secretName: pubsub-key
           containers:
           - name: hello
             image: google/cloud-sdk
@@ -15,4 +19,10 @@ spec:
             - /bin/sh
             - -c
             - gcloud pubsub topics publish tasks --message "hello"
+            volumeMounts:
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
+            env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/key.json
           restartPolicy: OnFailure
