@@ -3,6 +3,9 @@
 echo "installing helm tiller and client"
 bash ./setup-gcp.sh
 
+echo "Create Pub/Sub secret key"
+kubectl create secret generic pubsub-key --from-file=key.json=kube-pubsub-publisher.json
+
 echo "default installation storageClass and role binding for dashboard admin"
 bash ./setup-gcp.sh --chart charts/default
 
