@@ -18,7 +18,7 @@ spec:
             args:
             - /bin/sh
             - -c
-            - echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS" ;gcloud pubsub topics publish tasks --message '{"date_preset": "today"}'
+            - gcloud pubsub topics publish tasks --message '{"date_preset": "today"}'
             volumeMounts:
             - name: google-cloud-key
               mountPath: /var/secrets/google
